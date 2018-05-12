@@ -30,12 +30,24 @@
 
 package testz
 
+/** A test harness.
+  *
+  * Provides a way to create a test definition (of type `T`) from assertions
+  * and other nested tests. The execution of the tests takes place within some
+  * effect `F`, which provides the ability to test impure and/or asynchronous
+  * code as well as pure code.
+  */
 trait Harness[F[_], T] {
-  def apply(name: String)(assertions: F[List[TestError]]): T
-  def section(name: String)(test1: T, tests: T*): T
-}
 
-sealed trait TestError
-final case class ExceptionThrown(thrown: Throwable) extends TestError
-final case class Failure(failureAsString: String) extends TestError
-// TODO: use pretty-printer
+  /** Create a test named `name` which runs the given assertion.
+    *
+    * The test is considered successful if running the assertion produces an
+    * empty list of errors.
+    */
+  def apply(name: String)(assertion: F[List[TestError]]): T
+
+  /** Create a named test section out of the provided tests.
+    */
+  def section(name: String)(test1: T, tests: T*): T
+
+}

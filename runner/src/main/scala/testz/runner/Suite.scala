@@ -33,6 +33,15 @@ package runner
 
 import scala.concurrent.{ExecutionContext, Future}
 
+/** A test suite, which executes tests and asychronously produces a list of
+  * messages.
+  *
+  * Test writers should use a subclass of `Suite`, such as:
+  *
+  * - `PureSuite`, which tests synchronous, pure values using [[Function0]]
+  * - `ImpureSuite`, which tests potentially asynchronous values using [[Future]]
+  * - `TaskSuite`, which tests arbitrary effects using scalaz [[Task]]
+  */
 trait Suite {
   def run(implicit ec: ExecutionContext): Future[List[String]]
 }
