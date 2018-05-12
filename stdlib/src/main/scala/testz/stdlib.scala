@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicReference
 import scala.concurrent.{ExecutionContext, Future}
 
 abstract class PureSuite extends Suite {
-  def test[T](test: Test[Function0, T]): T
+  def test[T](test: Harness[Function0, T]): T
 
   def run(implicit ec: ExecutionContext): Future[List[String]] = {
     val buf = new AtomicReference[List[String]](Nil)
@@ -53,8 +53,8 @@ object PureSuite {
     val _ = buf.updateAndGet(str :: _)
   }
 
-  def makeHarness(buf: AtomicReference[List[String]]): Test[Function0, List[String] => Unit] =
-    new Test[Function0, TestEff[Unit]] {
+  def makeHarness(buf: AtomicReference[List[String]]): Harness[Function0, List[String] => Unit] =
+    new Harness[Function0, TestEff[Unit]] {
       def apply(name: String)(assertion: () => List[TestError]): TestEff[Unit] =
         { (ls: List[String]) =>
           val result: List[TestError] = try {
@@ -75,7 +75,7 @@ object PureSuite {
 }
 
 abstract class ImpureSuite extends Suite {
-  def test[T](test: Test[λ[A => () => Future[A]], () => Future[T]]): T
+  def test[T](test: Harness[λ[A => () => Future[A]], () => Future[T]]): T
 
   def run(implicit ec: ExecutionContext): Future[List[String]] = {
     val buf = new AtomicReference[List[String]](Nil)
@@ -91,8 +91,8 @@ object ImpureSuite {
     val _ = buf.updateAndGet(str :: _)
   }
 
-  def makeHarness(buf: AtomicReference[List[String]])(implicit ec: ExecutionContext): Test[λ[A => () => Future[A]], () => Future[List[String] => Future[Unit]]] =
-    new Test[λ[A => () => Future[A]], () => Future[List[String] => Future[Unit]]] {
+  def makeHarness(buf: AtomicReference[List[String]])(implicit ec: ExecutionContext): Harness[λ[A => () => Future[A]], () => Future[List[String] => Future[Unit]]] =
+    new Harness[λ[A => () => Future[A]], () => Future[List[String] => Future[Unit]]] {
       def apply(name: String)(assertion: () => Future[List[TestError]]): () => Future[List[String] => Future[Unit]] =
         () => Future.successful { (ls: List[String]) =>
           val result: Future[List[TestError]] = try {

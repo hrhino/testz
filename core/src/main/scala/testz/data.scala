@@ -30,7 +30,7 @@
 
 package testz
 
-trait Test[F[_], T] {
+trait Harness[F[_], T] {
   def apply(name: String)(assertions: F[List[TestError]]): T
   def section(name: String)(test1: T, tests: T*): T
 }

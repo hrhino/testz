@@ -36,10 +36,10 @@ import org.specs2.specification.core.Fragment
 object specs2 {
 
   abstract class TaskSuite() extends mutable.Specification {
-    def test[T](test: Test[Function0, Function0[T]]): Function0[T]
+    def test[T](test: Harness[Function0, Function0[T]]): Function0[T]
 
-    private def makeHarness: Test[() => ?, () => Fragment] =
-      new Test[() => ?, () => Fragment] {
+    private def makeHarness: Harness[() => ?, () => Fragment] =
+      new Harness[() => ?, () => Fragment] {
         def apply
           (name: String)
           (assertion: () => List[TestError])

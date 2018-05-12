@@ -40,7 +40,7 @@ final class ExhaustiveSuite extends PureSuite {
       Unfold((1 to 5).toList.map(_ + n): _*)
   }
 
-  def test[T](test: Test[() => ?, T]): T =
+  def test[T](test: Harness[() => ?, T]): T =
     test.section("exhaustives")(
       test("exhaustiveS int range") { () =>
         exhaustiveS(1, 2, 3, 4, 5, 6)(i =>

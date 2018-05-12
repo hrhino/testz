@@ -74,7 +74,7 @@ object z {
   implicit val equalTestError: Equal[TestError] = Equal.equalA
 
   abstract class TaskSuite extends Suite {
-    def test[T](test: Test[Task, Task[T]]): Task[T]
+    def test[T](test: Harness[Task, Task[T]]): Task[T]
     def run(implicit ec: ExecutionContext): Future[List[String]] = {
       type TestEff[A] = ReaderT[Task, List[String], A]
       val buf = Task.delay(new AtomicReference[List[String]](Nil))
@@ -83,8 +83,8 @@ object z {
         val _ = buf.updateAndGet(xs => str :: xs)
       }
 
-      def test(buf: AtomicReference[List[String]]): Test[Task, Task[TestEff[Unit]]] =
-        new Test[Task, Task[TestEff[Unit]]] {
+      def test(buf: AtomicReference[List[String]]): Harness[Task, Task[TestEff[Unit]]] =
+        new Harness[Task, Task[TestEff[Unit]]] {
           def apply
             (name: String)
             (assertion: Task[List[TestError]]

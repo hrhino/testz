@@ -43,7 +43,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object Main {
   def testPureSuite = new PureSuite {
-    def test[T](test: Test[Function0, T]): T =
+    def test[T](test: Harness[Function0, T]): T =
       test.section("some tests")(
         test("this test fails")(() =>
           assertEqualNoShow(1, 2)
@@ -55,7 +55,7 @@ object Main {
   }
 
   def testTaskSuite = new TaskSuite {
-    def test[T](test: Test[Task, Task[T]]): Task[T] = {
+    def test[T](test: Harness[Task, Task[T]]): Task[T] = {
       def doMoreTests(ts: Task[T], i: Int): Task[T] = {
         if (i == 0) ts
         else doMoreTests(
