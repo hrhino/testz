@@ -12,12 +12,12 @@ most basic suite type provided. We'll be using `testz-core`,
 It's provided in `testz.stdlib.PureSuite`.
 
 ```tut:silent
-import testz.{PureSuite, Test}
+import testz.{PureSuite, Harness}
 import testz.stdlib.assertEqual
 import scala.concurrent.ExecutionContext.global
 
 final class MathTests extends PureSuite {
-  def test[T](test: Test[Function0, T]): T = {
+  def test[T](test: Harness[Function0, T]): T = {
     test.section("math must")(
       test("say 1 + 1 == 2") { () =>
         assertEqual(1 + 1, 2)
@@ -38,14 +38,14 @@ new MathTests().run(global)
 I went through a lot there; let's dissect that.
 
 ```tut:silent
-import testz.{PureSuite, Test}
+import testz.{PureSuite, Harness}
 import testz.stdlib.assertEqual
 import scala.concurrent.ExecutionContext.global
 ```
 
-Here I import `Test[F[_], T]`, the type of test harnesses in testz.
+Here I import `Harness[F[_], T]`, the type of test harnesses in testz.
 Conventionally, test suites are written to extend a test suite class
-with an abstract method that takes a `Test` as a parameter.
+with an abstract method that takes a `Harness` as a parameter.
 
 I also import `assertEqual` from `testz.stdlib`; assertions are just
 lists of errors in testz. `assertEqual` returns an empty list of
@@ -53,7 +53,7 @@ errors if the two arguments are equal; otherwise it returns a single
 error.
 
 `PureSuite` is the test suite class I'm using. The type of test
-harness it uses is a `Test[Function0, T]` for all `T`, and it returns a
+harness it uses is a `Harness[Function0, T]` for all `T`, and it returns a
 `T` at the end. The idea behind this is for the test code to be unaware
 of what the type `T` will be. So the only way it can return a `T` is to
 use the test harness.
@@ -76,7 +76,7 @@ while tests run. Instead, use a class to keep your working set small
 during the run.
 
 ```scala
-def test[T](test: Test[Function0, T]): T = {
+def test[T](test: Harness[Function0, T]): T = {
 ```
 
 Here we define a method from `PureSuite` which we will use to define our tests.
